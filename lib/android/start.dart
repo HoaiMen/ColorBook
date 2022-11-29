@@ -103,7 +103,7 @@ class _MyHomePageState extends State<Start> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const Register(title: '',)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Register(this.data)));
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Color(0xff00C953),

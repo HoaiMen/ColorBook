@@ -1,14 +1,22 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-void main() {
+import '../Home/home.dart';
 
-  runApp(const MyApp());
+void main() async{
+  var url = Uri.parse('https://6382330e9842ca8d3ca3bce2.mockapi.io/api/users');
+  var rs = await http.get(url);
+  var data = jsonDecode(utf8.decode(rs.bodyBytes));
+  runApp(MyApp(data),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  // const MyApp({Key? key}) : super(key: key);
+  dynamic data;
 
+  MyApp(this.data);
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -19,21 +27,25 @@ class MyApp extends StatelessWidget {
 
         primarySwatch: Colors.blue,
       ),
-      home: const Register(title: ''),
+      home:  Register(data),
     );
   }
 }
 
 class Register extends StatefulWidget {
-  const Register({Key? key, required this.title}) : super(key: key);
+  // const Register({Key? key, required this.title}) : super(key: key);
+  // final String title;
 
-  final String title;
-
+  dynamic data;
+  Register(this.data);
   @override
-  State<Register> createState() => _MyHomePageState();
+  State<Register> createState() => _MyHomePageState(data);
 }
 
 class _MyHomePageState extends State<Register> {
+
+  dynamic data;
+  _MyHomePageState(this.data);
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController fullnameController = TextEditingController();
@@ -47,6 +59,22 @@ class _MyHomePageState extends State<Register> {
   void initState() {
     _passwordVisible = false;
   }
+
+  void showMessage() {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text("Message"),
+          content: Text("Account already exists, please create another account"),
+          actions: [
+            TextButton(onPressed: (){
+              Navigator.pop(context, "OK");
+            }, child: Text("Ok"))
+          ],
+        )
+    );
+  }
+
   void showFaileMessage(){
     showDialog<String>(
         context: context,
@@ -302,32 +330,28 @@ class _MyHomePageState extends State<Register> {
                         var fullname = fullnameController.text.trim();
                         var email = emailController.text.trim();
                         var password = passwordController.text.trim();
+                        var check = false;
+                        for (var e in data) {
+                          if(email == e["email"]){
+                            check = true;
+                            print("email đã có sẵn");
+                          }
+                        }
+                        if(check){
+                          showMessage();
+                        } else{
+                          var url = Uri.parse(
+                              'https://6382330e9842ca8d3ca3bce2.mockapi.io/api/users');
+                          await http.post(url, body: {
+                            "fullname": fullname,
+                            "email": email,
+                            "password": password
+                            // "password": _password.text.trim()
+                          });
+                          showFaileMessage();
+                        }
 
-                        var url = Uri.parse(
-                            'https://6382330e9842ca8d3ca3bce2.mockapi.io/api/users');
-                        await http.post(url, body: {
-                          "fullname": fullname,
-                          "email": email,
-                          "password": password
-                          // "password": _password.text.trim()
-                        });
-                        showFaileMessage();
                       }
-
-                      // if (_formKey.currentState!.validate()) {
-                      //   var fullname = fullnameController.text.trim();
-                      //   var email = emailController.text.trim();
-                      //   var password = passwordController.text.trim();
-                      //   var url = Uri.parse(
-                      //       'https://6382330e9842ca8d3ca3bce2.mockapi.io/api/users');
-                      //   await http.post(url, body: {
-                      //     "fullname": fullname,
-                      //     "email": email,
-                      //     "password": password
-                      //     // "password": _password.text.trim()
-                      //   });
-                      //   showFaileMessage();
-                      // }
                     },
                     style: ElevatedButton.styleFrom(
                         primary: Color(0xff00c853),
@@ -386,7 +410,7 @@ class _MyHomePageState extends State<Register> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          // title: Text(widget.title),
         ),
         body: new ListView(
           children: <Widget>[
@@ -404,3 +428,5 @@ class _MyHomePageState extends State<Register> {
     );
   }
 }
+
+
