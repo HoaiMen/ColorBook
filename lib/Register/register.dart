@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:main/Sign%20In/signin.dart';
+import 'package:main/support/support.dart';
 
 import '../Home/home.dart';
 
@@ -22,11 +24,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-
-        primarySwatch: Colors.blue,
-      ),
+      // title: 'Flutter Demo',
+      // theme: ThemeData(
+      //
+      //   primarySwatch: Colors.blue,
+      // ),
       home:  Register(data),
     );
   }
@@ -104,9 +106,9 @@ class _MyHomePageState extends State<Register> {
     ).then<void>((itemSelected) async {
       if (itemSelected == null) return;
       if(itemSelected == "1"){
-        //code here
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
       }else{
-        //code here
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
       }
     });
   }
@@ -196,10 +198,15 @@ class _MyHomePageState extends State<Register> {
                         Text("If You Need Any Support ", style: TextStyle(
                           fontSize: 15,
                         ),),
-                        Text(" Click Here", style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.green
-                        ),),
+                        FlatButton(
+                            onPressed: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
+                            },
+                            child: Text(" Click Here", style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.green
+                            ),),
+                        ),
                       ],
                     ),
                   ),
@@ -392,12 +399,18 @@ class _MyHomePageState extends State<Register> {
                       SizedBox(
                         width: 5,
                       ),
-                      Text(
+
+                      FlatButton(
+                        onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => SignIn(this.data)));
+                      },
+                        child: Text(
                         "Sign In",
                         style: TextStyle(
                           color: Colors.blueAccent,
                         ),
                       )
+                      ),
                     ],
                   ),
                 ],
@@ -409,9 +422,9 @@ class _MyHomePageState extends State<Register> {
     );
 
     return Scaffold(
-        appBar: AppBar(
-          // title: Text(widget.title),
-        ),
+        // appBar: AppBar(
+        //   title: Text(widget.title),
+        // ),
         body: new ListView(
           children: <Widget>[
             Container(

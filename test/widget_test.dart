@@ -7,8 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:main/History/history.dart';
-
+import 'package:main/Home/home.dart';
 import 'package:main/main.dart';
 
 void main() {

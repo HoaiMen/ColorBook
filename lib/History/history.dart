@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:main/BookItems/listBook.dart';
+
+import '../Home/home.dart';
+import '../profile/profile.dart';
+import '../support/support.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,177 +17,34 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: ''),
+      // title: 'Flutter Demo',
+      // theme: ThemeData(
+      //
+      //   primarySwatch: Colors.blue,
+      // ),
+      home: const History(title: ''),
     );
   }
 }
-
-class _ArticleDescription extends StatelessWidget {
-  const _ArticleDescription({
-    required this.title,
-    required this.subtitle,
-    required this.author,
-    required this.publishDate,
-    required this.readDuration,
-  });
-
-  final String title;
-  final String subtitle;
-  final String author;
-  final String publishDate;
-  final String readDuration;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Padding(padding: EdgeInsets.only(bottom: 2.0)),
-              Text(
-                subtitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12.0,
-                  color: Colors.black54,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Text(
-                author,
-                style: const TextStyle(
-                  fontSize: 12.0,
-                  color: Colors.black87,
-                ),
-              ),
-              Text(
-                '$publishDate - $readDuration',
-                style: const TextStyle(
-                  fontSize: 12.0,
-                  color: Colors.black54,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-class CustomListItemTwo extends StatelessWidget {
-  const CustomListItemTwo({
-    super.key,
-    required this.thumbnail,
-    required this.title,
-    required this.subtitle,
-    required this.author,
-    required this.publishDate,
-    required this.readDuration,
-  });
-
-  final Widget thumbnail;
-  final String title;
-  final String subtitle;
-  final String author;
-  final String publishDate;
-  final String readDuration;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: SizedBox(
-        height: 100,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            AspectRatio(
-              aspectRatio: 1.0,
-              child: thumbnail,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20.0, 0.0, 2.0, 0.0),
-                child: _ArticleDescription(
-                  title: title,
-                  subtitle: subtitle,
-                  author: author,
-                  publishDate: publishDate,
-                  readDuration: readDuration,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class History extends StatefulWidget {
+  const History({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<History> createState() => _MyHomePageState();
 }
 
 
-class _MyHomePageState extends State<MyHomePage>
+class _MyHomePageState extends State<History>
     with TickerProviderStateMixin {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  final TextEditingController fullnameController = TextEditingController();
-
-  final TextEditingController emailController = TextEditingController();
-
-  final TextEditingController passwordController = TextEditingController();
-
-  final List<String> items = List<String>.generate( 5, (i) => i == 0 ?("Hot"):'$i');
-
 
   int currentIndex = 0;
-  int _counter = 0;
-  late TabController _tabController;
-  late bool _passwordVisible;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    _passwordVisible = false;
-    _tabController = TabController(length: 3, vsync: this);
-  }
+}
 
   void showPopupMenu() async {
     await showMenu(
@@ -218,11 +80,11 @@ class _MyHomePageState extends State<MyHomePage>
       position: RelativeRect.fromLTRB(40, 160, 70, 100),  //position where you want to show the menu on screen
       items: [
         PopupMenuItem<String>(
-            child: const Text('menu option 1'), value: '1'),
+            child: const Text('Language Settings'), value: '1'),
         PopupMenuItem<String>(
-            child: const Text('menu option 2'), value: '2'),
+            child: const Text('Application Management'), value: '2'),
         PopupMenuItem<String>(
-            child: const Text('menu option 3'), value: '3'),
+            child: const Text('Application Information'), value: '3'),
       ],
       elevation: 8.0,
     )
@@ -231,58 +93,19 @@ class _MyHomePageState extends State<MyHomePage>
       if (itemSelected == null) return;
 
       if(itemSelected == "1"){
-        //code here
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
       }else if(itemSelected == "2"){
-        //code here
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
       }else{
-        //code here
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
       }
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
 
-
-
-    Widget tabbar = Scaffold(
-      appBar:  AppBar(
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const <Widget>[
-            Tab(
-              icon: Icon(Icons.cloud_outlined),
-            ),
-            Tab(
-              icon: Icon(Icons.beach_access_sharp),
-            ),
-            Tab(
-              icon: Icon(Icons.brightness_5_sharp),
-            ),
-          ],
-        ),
-        title: Text("tabbar example"),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const <Widget>[
-          Center(
-            child: Text("It's cloudy here"),
-          ),
-          Center(
-            child: Text("It's rainy here"),
-          ),
-          Center(
-            child: Text("It's sunny here"),
-          ),
-        ],
-      ),
-    );
-
-
-
-    Widget head = new Container(
+   Widget head = new Container(
         child: Column(
           children: [
             Container(
@@ -302,10 +125,15 @@ class _MyHomePageState extends State<MyHomePage>
                   Container(
                     child: Row(
                       children: [
-                        Text("Soroushnrz",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        FlatButton(
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(title: "")));
+                          },
+                          child: Text('Soroushnrz',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         SizedBox(width: 15,),
@@ -331,14 +159,13 @@ class _MyHomePageState extends State<MyHomePage>
           Text("History",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 28,
+              fontSize: 30,
             ),),
-          SizedBox(height: 15,),
+          SizedBox(height: 20,),
           TextFormField(
             decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search, color: Colors.grey,
                 ),
-
                 filled: true,
                 fillColor: Colors.black12,
                 hintText: 'Search by Titel, Author, Genre',
@@ -348,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage>
                 )
             ),
           ),
-          SizedBox(height: 15,),
+          SizedBox(height: 30,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -357,11 +184,15 @@ class _MyHomePageState extends State<MyHomePage>
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),),
-              Text("View all",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey,
+              FlatButton(
+                onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListBook(title: "")));
+                },
+                child: Text("View All", style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.green
                 ),),
+              ),
             ],
           ),
           SizedBox(height: 15,),
@@ -377,22 +208,6 @@ class _MyHomePageState extends State<MyHomePage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Most Recently Read",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),),
-              Text("View all",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey,
-                ),),
-            ],
-          ),
-
           SizedBox(height: 15,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -401,38 +216,27 @@ class _MyHomePageState extends State<MyHomePage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: const Image(image: AssetImage('images/book6.png'), width: 140,),
+                    borderRadius: BorderRadius.circular(20),
+                    child: const Image(image: AssetImage('images/book6.png'), width: 100,),
                   ),
                   SizedBox(height: 10,),
-                  Text("Bước Chân...", style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                  SizedBox(height: 7,),
-                  Text("Hae Min", style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),)
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: const Image(image: AssetImage('images/book7.png'), width: 140,),
-                  ),
-                  SizedBox(height: 10,),
-                  Text("Trưởng Thành", style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                  SizedBox(height: 7,),
-                  Text("Writinman", style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),)
+                  Container(
+                    width: 100,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('''Bước Chân Chậm lại''', style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),),
+                        SizedBox(height: 7,),
+                        Text("Hae Min", style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),)
+                      ],
+                    ),
+                  )
 
                 ],
               ),
@@ -440,20 +244,55 @@ class _MyHomePageState extends State<MyHomePage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: const Image(image: AssetImage('images/book8.png'), width: 140,),
+                    borderRadius: BorderRadius.circular(20),
+                    child: const Image(image: AssetImage('images/book8.png'), width: 100,),
                   ),
                   SizedBox(height: 10,),
-                  Text("Trưởng Thành", style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                  SizedBox(height: 7,),
-                  Text("Writinman", style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),)
+                  Container(
+                    width: 100,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Bắt Trẻ Đồng Xanh", style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),),
+                        SizedBox(height: 7,),
+                        Text("Writinman", style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),)
+                      ],
+                    ),
+                  )
 
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: const Image(image: AssetImage('images/book9.png'), width: 100,),
+                  ),
+                  SizedBox(height: 10,),
+                  Container(
+                    width: 100,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Đọc Vị Bất Kỳ Ai", style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),),
+                        SizedBox(height: 7,),
+                        Text("J.Lieberman", style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),)
+                      ],
+                    ),
+                  )
                 ],
               ),
 
@@ -461,7 +300,7 @@ class _MyHomePageState extends State<MyHomePage>
           ),
 
 
-          SizedBox(height: 20,),
+          SizedBox(height: 40,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -470,11 +309,15 @@ class _MyHomePageState extends State<MyHomePage>
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),),
-              Text("View all",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey,
+              FlatButton(
+                onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListBook(title: '',)));
+                },
+                child: Text("View All", style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.green
                 ),),
+              ),
             ],
           ),
           SizedBox(height: 15,),
@@ -489,8 +332,8 @@ class _MyHomePageState extends State<MyHomePage>
                     child: const Image(image: AssetImage('images/book1.png'), width: 140,),
                   ),
                   SizedBox(height: 10,),
-                  Text("Catcher in the ...", style: TextStyle(
-                    fontSize: 18,
+                  Text("Catcher in the Rye", style: TextStyle(
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),),
                   SizedBox(height: 7,),
@@ -508,8 +351,8 @@ class _MyHomePageState extends State<MyHomePage>
                     child: const Image(image: AssetImage('images/book3.png'), width: 140,),
                   ),
                   SizedBox(height: 10,),
-                  Text("Someone Like...", style: TextStyle(
-                    fontSize: 18,
+                  Text("Someone Like You", style: TextStyle(
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),),
                   SizedBox(height: 7,),
@@ -529,7 +372,7 @@ class _MyHomePageState extends State<MyHomePage>
                   ),
                   SizedBox(height: 10,),
                   Text("The Arsonist", style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),),
                   SizedBox(height: 7,),
@@ -549,9 +392,9 @@ class _MyHomePageState extends State<MyHomePage>
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      // appBar: AppBar(
+      //   title: Text(widget.title),
+      // ),
       body: new ListView(
         children: <Widget>[
           Container(
@@ -575,20 +418,29 @@ class _MyHomePageState extends State<MyHomePage>
         selectedItemColor: Color(0xffc62828),
         unselectedItemColor: Colors.black38,
         currentIndex: currentIndex,
-        onTap: (index) => setState(() {
-          currentIndex = index;
-        }),
+        onTap: (index) {
+          if(index == 0) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(title: "")));
+          } else if (index == 2){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(title: "")));
+          } else if (index == 3){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(title: "")));
+          }
+          setState(() {
+            currentIndex = index;
+          });
+        },
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.arrow_back_ios,),
-              label: 'back',
+              icon: Icon(Icons.home,),
+              label: 'Home',
               backgroundColor: Color(0xffe0e0e0)),
           BottomNavigationBarItem(
               icon: Icon(Icons.history, ),
               label: 'History'),
           BottomNavigationBarItem(
               icon: Icon(Icons.bookmark, ),
-              label: 'Bookmark',
+              label: 'Favorite',
               backgroundColor: Colors.white60),
           BottomNavigationBarItem(
               icon: Icon(Icons.account_circle, ),

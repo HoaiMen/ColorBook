@@ -38,6 +38,7 @@ dependencies:
   retrofit: ^3.0.1+1
   logger: any
   dio: ^4.0.4
+  carousel_slider: ^4.0.0
 
 
 
@@ -97,6 +98,17 @@ flutter:
      - images/book6.png
      - images/book7.png
      - images/book8.png
+     - images/book9.png
+     - images/book10.png
+     - images/book11.png
+     - images/book12.png
+     - images/book13.png
+     - images/back1.png
+     - images/back2.png
+     - images/back3.png
+     - images/back4.png
+
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

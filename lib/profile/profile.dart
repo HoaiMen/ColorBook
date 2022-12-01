@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:main/Home/home.dart';
+
+import '../History/history.dart';
+import '../android/start.dart';
+import '../support/support.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,41 +17,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      home: const MyHomePage(title: ''),
+      // title: 'Flutter Demo',
+      home: const Profile(title: ''),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class Profile extends StatefulWidget {
+  const Profile({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<Profile> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class _MyHomePageState extends State<Profile> {
 
-  final TextEditingController emailController = TextEditingController();
-
-  final TextEditingController passwordController = TextEditingController();
-
-  int _counter = 0;
   int currentIndex = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-  late bool _passwordVisible;
-  @override
-  void initState() {
-    _passwordVisible = false;
-  }
+  get data => null;
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +77,16 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontWeight: FontWeight.bold,
                         ),),
                         SizedBox(height: 7,),
-                        Text("Edit Profile", style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.green,
-                        ),),
+                        FlatButton(
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(title: "")));
+                          },
+                          child: Text("Edit Profile", style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.green,
+                          ),),
+                        ),
+
                       ],
                     ),
                   )
@@ -104,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
         )
     );
 
-    Widget body = new Container(
+    Widget body = Container(
       child: Column(
         children: [
           ListTile(
@@ -118,9 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.chevron_right, size: 30,),
               color: Colors.blue,
               onPressed: () {
-                setState(() {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
 
-                });
               },
               splashRadius: 17,
               splashColor: Color(0xffb3e5fc),
@@ -138,9 +133,8 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.chevron_right, size: 30,),
               color: Colors.blue,
               onPressed: () {
-                setState(() {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
 
-                });
               },
               splashRadius: 17,
               splashColor: Color(0xffb3e5fc),
@@ -158,9 +152,8 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.chevron_right, size: 30,),
               color: Colors.blue,
               onPressed: () {
-                setState(() {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
 
-                });
               },
               splashRadius: 17,
               splashColor: Color(0xffb3e5fc),
@@ -179,9 +172,8 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.chevron_right, size: 30,),
               color: Colors.blue,
               onPressed: () {
-                setState(() {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
 
-                });
               },
               splashRadius: 17,
               splashColor: Color(0xffb3e5fc),
@@ -199,9 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.chevron_right, size: 30,),
               color: Colors.blue,
               onPressed: () {
-                setState(() {
-
-                });
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Start(data)));
               },
               splashRadius: 17,
               splashColor: Color(0xffb3e5fc),
@@ -212,9 +202,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      // appBar: AppBar(
+      //   title: Text(widget.title),
+      // ),
       body: new SingleChildScrollView(
         child: Stack(
           children: <Widget>[
@@ -237,6 +227,13 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: currentIndex,
         onTap: (index) => setState(() {
           currentIndex = index;
+          if(index == 0) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(title: "")));
+          } else if (index == 1){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => History(title: "")));
+          } else if (index == 2){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(title: "")));
+          }
         }),
         items: [
           BottomNavigationBarItem(
@@ -247,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.history, ),
               label: 'History'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.favorite, ),
+              icon: Icon(Icons.bookmark, ),
               label: 'Favorite',
               backgroundColor: Colors.white60),
           BottomNavigationBarItem(

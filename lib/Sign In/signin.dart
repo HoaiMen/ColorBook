@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:main/Home/home.dart';
 import 'package:http/http.dart' as http;
+import 'package:main/Register/register.dart';
+
+import '../support/support.dart';
 
 void main() async{
   var url = Uri.parse('https://6382330e9842ca8d3ca3bce2.mockapi.io/api/users');
@@ -20,11 +23,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-
-        primarySwatch: Colors.blue,
-      ),
+      // title: 'Flutter Demo',
+      // theme: ThemeData(
+      //
+      //   primarySwatch: Colors.blue,
+      // ),
       home:  SignIn(data),
     );
   }
@@ -84,9 +87,9 @@ class _MyHomePageState extends State<SignIn> {
     ).then<void>((itemSelected) async {
       if (itemSelected == null) return;
       if(itemSelected == "1"){
-        //code here
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
       }else{
-        //code here
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
       }
     });
   }
@@ -173,10 +176,15 @@ class _MyHomePageState extends State<SignIn> {
                         Text("If You Need Any Support ", style: TextStyle(
                           fontSize: 15,
                         ),),
-                        Text(" Click Here", style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.green
-                        ),),
+                        FlatButton(
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Support()));
+                          },
+                          child: Text(" Click Here", style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.green
+                          ),),
+                        ),
                       ],
                     ),
                   ),
@@ -340,12 +348,17 @@ class _MyHomePageState extends State<SignIn> {
                       SizedBox(
                         width: 5,
                       ),
-                      Text(
-                        "Register Now",
-                        style: TextStyle(
-                          color: Colors.blueAccent,
+
+                      FlatButton(
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Register(this.data)));
+                          },
+                          child: Text("Register Now",
+                            style: TextStyle(
+                            color: Colors.blueAccent,
                         ),
                       )
+                      ),
                     ],
                   ),
                 ],
@@ -357,13 +370,13 @@ class _MyHomePageState extends State<SignIn> {
     );
 
     return Scaffold(
-        appBar: AppBar(
-          // title: Text(widget.title),
-        ),
+        // appBar: AppBar(
+        //   // title: Text(widget.title),
+        // ),
         body: new ListView(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.fromLTRB(30, 30, 30, 60),
+              margin: EdgeInsets.fromLTRB(30, 30, 30, 10),
               child: Column(
                 children: [
                   head,
