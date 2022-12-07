@@ -262,7 +262,6 @@ class _MyHomePageState extends State<HomePage>
                         ),
 
                         SizedBox(width: 15,),
-
                         ClipRRect(
                           borderRadius: BorderRadius.circular(200.0),
                           child: const Image(image: AssetImage('images/anh4.png'), width: 50,),
