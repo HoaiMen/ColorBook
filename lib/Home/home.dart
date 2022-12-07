@@ -4,9 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:main/BookItems/listBook.dart';
 import 'package:main/History/history.dart';
 import 'package:main/profile/profile.dart';
-import '../services/book.dart';
+import '../model/post.dart';
 import '../support/support.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:main/network/network_request.dart';
 
 void main() async {
   var url = Uri.parse('https://6382330e9842ca8d3ca3bce2.mockapi.io/api/users');
@@ -168,25 +169,23 @@ class HomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<HomePage>
     with TickerProviderStateMixin {
-  late final Future<List<Books>> books;
-  final TextEditingController fullnameController = TextEditingController();
+  List<Post> postData = [];
   int currentIndex = 0;
   int activePage = 1;
   late TabController _tabController;
   late PageController _pageController;
-  List<String> images = [
-    "images/sach.png",
-    "images/back1.png",
-    "images/content1.png"
-  ];
 
 
   @override
   void initState() {
     super.initState();
+    NetworkRequest.fetchPosts().then((dataFromServer) {
+      setState(() {
+        postData = dataFromServer;
+      });
+    });
     _pageController = PageController(viewportFraction: 0.8,initialPage: 1);
     _tabController = TabController(length: 3, vsync: this);
-    books = fetchBooks();
   }
 
 
@@ -461,7 +460,7 @@ class _MyHomePageState extends State<HomePage>
                 ),),
               FlatButton(
                 onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListBook(title: "")));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListBook(title: '',)));
                 },
                 child: Text("View All", style: TextStyle(
                     fontSize: 18,
@@ -907,31 +906,30 @@ class _MyHomePageState extends State<HomePage>
         ],
       ),
     );
-    //
-    // Widget content4 = Container(
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       Text("hhahahaha",
-    //         style: TextStyle(
-    //           fontWeight: FontWeight.bold,
-    //           fontSize: 28,
-    //         ),),
-    //       SizedBox(height: 15,),
-    //       FutureBuilder<List<Books>>(
-    //           future: books,
-    //           builder: (context, snapshot) {
-    //             if(snapshot.hasError){
-    //               return Text("${snapshot.error}");
-    //             } else if (snapshot.hasData){
-    //               return Text('${snapshot.data}');
-    //             }
-    //             return CircularProgressIndicator();
-    //           },
-    //       ),
-    //     ],
-    //   ),
-    // );
+
+    Widget content4 = SizedBox(
+      height: 200,
+      child: ListView.builder(
+        padding: EdgeInsets.all(10),
+          itemCount: postData.length,
+          itemBuilder: (context, index){
+            return Card(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${postData[index].name}'),
+                    SizedBox(height: 20,),
+                    Image.asset('${postData[index].avatar}'),
+                    Text('${postData[index].avatar}')
+                  ],
+                ),
+              ),
+
+            );
+          })
+    );
 
 
     return Scaffold(
@@ -954,7 +952,6 @@ class _MyHomePageState extends State<HomePage>
                 content2,
                 content3,
                 SizedBox(height: 30,),
-                // content4,
 
               ],
             ),
@@ -996,67 +993,47 @@ class _MyHomePageState extends State<HomePage>
     );
   }
 }
+//
+// class CustomSearch extends SearchDelegate {
+//   @override
+//   List<Widget>? buildActions(BuildContext context) {
+//     return [
+//       IconButton(
+//           onPressed: (){
+//             query = '';
+//           },
+//           icon: Icon(Icons.clear)
+//       )
+//     ];
+//   }
+//
+//   @override
+//   Widget? buildLeading(BuildContext context) {
+//     return IconButton(
+//         onPressed: (){
+//           close(context, null);
+//         },
+//         icon: Icon(Icons.arrow_back),
+//     );
+//   }
+//
+//   @override
+//   Widget buildSuggestions(BuildContext context)  {
+//     List<String> matchQuery = [];
+//     return ListView.builder(
+//         itemCount: matchQuery.length,
+//         itemBuilder: (context, index) {
+//           var result = matchQuery[index];
+//           return ListTile(
+//             title: Text(result)
+//           );
+//         });
+//   }
+//
+//   @override
+//   Widget buildResults(BuildContext context) {
+//     // TODO: implement buildResults
+//     throw UnimplementedError();
+//   }
+// }
 
-class CustomSearch extends SearchDelegate {
-
-
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-          onPressed: (){
-            query = '';
-          },
-          icon: Icon(Icons.clear)
-      )
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-        onPressed: (){
-          close(context, null);
-        },
-        icon: Icon(Icons.arrow_back),
-    );
-  }
-
-
-  @override
-  Widget buildSuggestions(BuildContext context)  {
-    List<String> matchQuery = [];
-
-
-    return ListView.builder(
-        itemCount: matchQuery.length,
-        itemBuilder: (context, index) {
-          var result = matchQuery[index];
-          return ListTile(
-            title: Text(result)
-          );
-        });
-  }
-
-
-  @override
-  Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    throw UnimplementedError();
-  }
-}
-
-List<Books> parseBooks (String responseBody) {
-  final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
-  return parsed.map<Books>((json) => Books.fromJson(json)).toList();
-}
-
-Future<List<Books>> fetchBooks() async{
-  final url1 = Uri.parse('https://6382330e9842ca8d3ca3bce2.mockapi.io/api/books');
-  final response = await http.get(url1);
-  if(response.statusCode == 200){
-    return parseBooks(response.body);
-  } else {
-    throw Exception('Unable to fetch books from the rest API');
-  }
-}
