@@ -1,18 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:main/BookItems/listBook.dart';
-
+import 'package:http/http.dart' as http;
 import '../Home/home.dart';
 import '../profile/profile.dart';
 import '../support/support.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  var url = Uri.parse('https://6382330e9842ca8d3ca3bce2.mockapi.io/api/users');
+  var rs = await http.get(url);
+  var data = jsonDecode(utf8.decode(rs.bodyBytes));
+  runApp(MyApp(data),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  // const MyApp({Key? key}) : super(key: key);
   // This widget is the root of your application.
+  dynamic data;
+  MyApp(this.data);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,23 +29,25 @@ class MyApp extends StatelessWidget {
       //
       //   primarySwatch: Colors.blue,
       // ),
-      home: const History(title: ''),
+      home:  History(data),
     );
   }
 }
 class History extends StatefulWidget {
-  const History({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  // const History({Key? key, required this.title}) : super(key: key);
+  // final String title;
+  dynamic data;
+  History(this.data);
 
   @override
-  State<History> createState() => _MyHomePageState();
+  State<History> createState() => _MyHomePageState(data);
 }
 
 
 class _MyHomePageState extends State<History>
     with TickerProviderStateMixin {
-
+  dynamic data;
+  _MyHomePageState(this.data);
   int currentIndex = 0;
 
   @override
@@ -127,7 +136,7 @@ class _MyHomePageState extends State<History>
                       children: [
                         FlatButton(
                           onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(title: "")));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(data)));
                           },
                           child: Text('Soroushnrz',
                             style: TextStyle(
@@ -420,11 +429,11 @@ class _MyHomePageState extends State<History>
         currentIndex: currentIndex,
         onTap: (index) {
           if(index == 0) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(title: "")));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(data)));
           } else if (index == 2){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(title: "")));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(data)));
           } else if (index == 3){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(title: "")));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(data)));
           }
           setState(() {
             currentIndex = index;

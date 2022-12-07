@@ -1,42 +1,53 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:main/Home/home.dart';
-
+import 'package:http/http.dart' as http;
 import '../History/history.dart';
 import '../android/start.dart';
 import '../support/support.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async{
+  var url = Uri.parse('https://6382330e9842ca8d3ca3bce2.mockapi.io/api/users');
+  var rs = await http.get(url);
+  var data = jsonDecode(utf8.decode(rs.bodyBytes));
+  runApp(MyApp(data),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  // const MyApp({Key? key}) : super(key: key);
   // This widget is the root of your application.
+  dynamic data;
+
+  MyApp(this.data);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // title: 'Flutter Demo',
-      home: const Profile(title: ''),
+      home:  Profile(data),
     );
   }
 }
 
 class Profile extends StatefulWidget {
-  const Profile({Key? key, required this.title}) : super(key: key);
+  // const Profile({Key? key, required this.title}) : super(key: key);
+  //
+  // final String title;
+  dynamic data;
 
-  final String title;
-
+  Profile(this.data);
   @override
-  State<Profile> createState() => _MyHomePageState();
+  State<Profile> createState() => _MyHomePageState(data);
 }
 
 class _MyHomePageState extends State<Profile> {
 
   int currentIndex = 0;
 
-  get data => null;
+  dynamic data;
+  _MyHomePageState(this.data);
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +90,7 @@ class _MyHomePageState extends State<Profile> {
                         SizedBox(height: 7,),
                         FlatButton(
                           onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(title: "")));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(data)));
                           },
                           child: Text("Edit Profile", style: TextStyle(
                             fontSize: 15,
@@ -228,11 +239,11 @@ class _MyHomePageState extends State<Profile> {
         onTap: (index) => setState(() {
           currentIndex = index;
           if(index == 0) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(title: "")));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(data)));
           } else if (index == 1){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => History(title: "")));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => History(data)));
           } else if (index == 2){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(title: "")));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(data)));
           }
         }),
         items: [

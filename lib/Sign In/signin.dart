@@ -303,7 +303,7 @@ class _MyHomePageState extends State<SignIn> {
                           }
                         }
                         if(check){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage(title: '',)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) =>  HomePage(data)));
                         } else{
                           showFaileMessage();
                         }

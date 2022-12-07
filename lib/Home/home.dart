@@ -3,24 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:main/BookItems/listBook.dart';
 import 'package:main/History/history.dart';
+import 'package:main/profile/introduce/introduce.dart';
 import 'package:main/profile/profile.dart';
-import '../services/book.dart';
+import '../model/post.dart';
 import '../support/support.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:main/network/network_request.dart';
 
 void main() async {
   var url = Uri.parse('https://6382330e9842ca8d3ca3bce2.mockapi.io/api/users');
   var rs = await http.get(url);
   var data = jsonDecode(utf8.decode(rs.bodyBytes));
-  print(data);
-
-  runApp(MyApp());
+  runApp(MyApp(data),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key, }) : super(key: key);
-
+  // const MyApp({Key? key, }) : super(key: key);
   // This widget is the root of your application.
+  dynamic data;
+
+  MyApp(this.data);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,7 +33,7 @@ class MyApp extends StatelessWidget {
       //
       //   primarySwatch: Colors.blue,
       // ),
-      home: const HomePage(title: ''),
+      home:  HomePage(data),
     );
   }
 }
@@ -157,36 +160,39 @@ class CustomListItemTwo extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.title, }) : super(key: key);
+  // const HomePage({Key? key, required this.title, }) : super(key: key);
+  //
+  // final String title;
+  dynamic data;
 
-  final String title;
-
+  HomePage(this.data);
   @override
-  State<HomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _MyHomePageState(data);
 }
 
 
 class _MyHomePageState extends State<HomePage>
     with TickerProviderStateMixin {
-  late final Future<List<Books>> books;
-  final TextEditingController fullnameController = TextEditingController();
+  dynamic data;
+
+  _MyHomePageState(this.data);
+  List<Post> postData = [];
+
   int currentIndex = 0;
   int activePage = 1;
   late TabController _tabController;
   late PageController _pageController;
-  List<String> images = [
-    "images/sach.png",
-    "images/back1.png",
-    "images/content1.png"
-  ];
-
 
   @override
   void initState() {
     super.initState();
+    NetworkRequest.fetchPosts().then((dataFromServer) {
+      setState(() {
+        postData = dataFromServer;
+      });
+    });
     _pageController = PageController(viewportFraction: 0.8,initialPage: 1);
     _tabController = TabController(length: 3, vsync: this);
-    books = fetchBooks();
   }
 
 
@@ -221,6 +227,8 @@ class _MyHomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
 
+
+
     Widget head = Container(
         child: Column(
           children: [
@@ -243,7 +251,7 @@ class _MyHomePageState extends State<HomePage>
                       children: [
                         FlatButton(
                           onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(title: "")));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(data)));
                           },
                           child: Text('Soroushnrz',
                             style: TextStyle(
@@ -284,11 +292,11 @@ class _MyHomePageState extends State<HomePage>
                 prefixIcon: IconButton(
                   icon: Icon(Icons.search),
                   color: Colors.black,
-                  onPressed: () async {
-                    // showSearch(
-                    //     context: context,
-                    //     delegate: CustomSearch()
-                    // );
+                  onPressed: ()  {
+                    showSearch(
+                        context: context,
+                        delegate: CustomSearch()
+                    );
                   },
                   splashRadius: 17,
                   splashColor: Colors.lightBlueAccent,
@@ -461,7 +469,7 @@ class _MyHomePageState extends State<HomePage>
                 ),),
               FlatButton(
                 onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListBook(title: "")));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListBook(title: '',)));
                 },
                 child: Text("View All", style: TextStyle(
                     fontSize: 18,
@@ -471,51 +479,176 @@ class _MyHomePageState extends State<HomePage>
             ],
           ),
           SizedBox(height: 15,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: const Image(image: AssetImage('images/book1.png'), width: 170,),
-                  ),
-                  SizedBox(height: 10,),
-                  Text("Catcher In The Rye", style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                  SizedBox(height: 7,),
-                  Text("J.K. Rowling", style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),)
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: const Image(image: AssetImage('images/book2.png'), width: 170,),
-                  ),
-                  SizedBox(height: 10,),
-                  Text("Lord Of The Rings", style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                  SizedBox(height: 7,),
-                  Text("J.R.R Tolkein", style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),)
-                ],
-              ),
+          DefaultTabController(
+            length: 5,
+            child: Column(
+              children: [
+                Container(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TabBar(
+                      unselectedLabelStyle: TextStyle(color: Colors.grey[500], fontSize: 17,),
+                      unselectedLabelColor: Colors.grey[500],
+                      labelColor: Colors.black,
+                      labelStyle: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                      isScrollable: true,
+                      labelPadding: EdgeInsets.only(left: 20, right: 20),
+                      tabs: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            FlatButton(
+                              onPressed: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Introduce(title: "")));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child:  Image.asset('${postData[0].avatar}', width: 170,)
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Text('${postData[0].name}', style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),),
+                                  SizedBox(height: 7,),
+                                  Text('${postData[0].author}', style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),)
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            FlatButton(
+                              onPressed: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Introduce(title: "")));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child:  Image.asset('${postData[1].avatar}', width: 170,)
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Text('${postData[1].name}', style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),),
+                                  SizedBox(height: 7,),
+                                  Text('${postData[1].author}', style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),)
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            FlatButton(
+                              onPressed: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Introduce(title: "")));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child:  Image.asset('${postData[2].avatar}', width: 170,)
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Text('${postData[2].name}', style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),),
+                                  SizedBox(height: 7,),
+                                  Text('${postData[2].author}', style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),)
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            FlatButton(
+                              onPressed: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Introduce(title: "")));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child:  Image.asset('${postData[3].avatar}', width: 170,)
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Text('${postData[3].name}', style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),),
+                                  SizedBox(height: 7,),
+                                  Text('${postData[3].author}', style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),)
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            FlatButton(
+                              onPressed: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Introduce(title: "")));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child:  Image.asset('${postData[4].avatar}', width: 170,)
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Text('${postData[4].name}', style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),),
+                                  SizedBox(height: 7,),
+                                  Text('${postData[4].author}', style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),)
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
 
-            ],
+                      ],
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
           ),
-
 
           SizedBox(height: 30,),
           Row(
@@ -580,198 +713,178 @@ class _MyHomePageState extends State<HomePage>
                   child: TabBarView(
                     children:  <Widget>[
                       Container(
-                          child:Column(
-                            children: [
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book3.png'),),
-                                ),
-                                title: 'Someone Like You',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'Roaild Dahl',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book4.png'),),
-                                ),
-                                title: 'Great Expectations',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'Charies Dickens',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book5.png'),),
-                                ),
-                                title: 'The Arsonist',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'J.D. Salinger',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                            ],
+                          child: ListView.builder(
+                              itemCount: 3,
+                              itemBuilder: (context, index)  {
+                                for (var item in postData) {
+                                  if (item.category == "Fantasy") {
+                                    return Column(
+                                      children: [
+                                        CustomListItemTwo(
+                                          thumbnail: Container(
+                                            child: Image.asset('${item.avatar}'),),
+                                          title: '${item.name}',
+                                          subtitle: '${item.review}',
+                                          author: '${item.author}',
+                                          publishDate: 'Dec 28',
+                                          readDuration: '5 mins',
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                }
+                                return CustomListItemTwo(
+                                          thumbnail: Container(
+                                            child: Image(image: AssetImage('images/book4.png'),),
+                                          ),
+                                          title: 'Great Expectations',
+                                          subtitle: 'Flutter continues to improve and expand its horizons. '
+                                              'This text should max out at two lines and clip',
+                                          author: 'Charies Dickens',
+                                          publishDate: 'Dec 28',
+                                          readDuration: '5 mins',
+                                        );
+                              }
+                              )
+                      ),
+                      Container(
+                          child: ListView.builder(
+                              itemCount: 3,
+                              itemBuilder: (context, index)  {
+                                for (var item in postData) {
+                                  if (item.category == "Comedy") {
+                                    return Column(
+                                      children: [
+                                        CustomListItemTwo(
+                                          thumbnail: Container(
+                                            child: Image.asset('${item.avatar}'),),
+                                          title: '${item.name}',
+                                          subtitle: '${item.review}',
+                                          author: '${item.author}',
+                                          publishDate: 'Dec 28',
+                                          readDuration: '5 mins',
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                }
+                                return CustomListItemTwo(
+                                  thumbnail: Container(
+                                    child: Image(image: AssetImage('images/book4.png'),),
+                                  ),
+                                  title: 'Great Expectations',
+                                  subtitle: 'Flutter continues to improve and expand its horizons. '
+                                      'This text should max out at two lines and clip',
+                                  author: 'Charies Dickens',
+                                  publishDate: 'Dec 28',
+                                  readDuration: '5 mins',
+                                );
+                              }
                           )
                       ),
                       Container(
-                          child:Column(
-                            children: [
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book6.png'),),
-                                ),
-                                title: 'Bước Chân Chậm Lại',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'Hae Min',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book8.png'),),
-                                ),
-                                title: 'Bắt Trẻ Đồng Xanh',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'J.D. Salinger',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book11.png'),),
-                                ),
-                                title: 'Sapiens Lược Sử Loài Người',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'Dash',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                            ],
+                          child: ListView.builder(
+                              itemCount: 3,
+                              itemBuilder: (context, index)  {
+                                for (var item in postData) {
+                                  if (item.category == "Horror") {
+                                    return Column(
+                                      children: [
+                                        CustomListItemTwo(
+                                          thumbnail: Container(
+                                            child: Image.asset('${item.avatar}'),),
+                                          title: '${item.name}',
+                                          subtitle: '${item.review}',
+                                          author: '${item.author}',
+                                          publishDate: 'Dec 28',
+                                          readDuration: '5 mins',
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                }
+                                return CustomListItemTwo(
+                                  thumbnail: Container(
+                                    child: Image(image: AssetImage('images/book4.png'),),
+                                  ),
+                                  title: 'Great Expectations',
+                                  subtitle: 'Flutter continues to improve and expand its horizons. '
+                                      'This text should max out at two lines and clip',
+                                  author: 'Charies Dickens',
+                                  publishDate: 'Dec 28',
+                                  readDuration: '5 mins',
+                                );
+                              }
                           )
                       ),
                       Container(
-                          child:Column(
-                            children: [
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book7.png'),),
-                                ),
-                                title: 'Trưởng Thành Là Khi Nổi Buồn Cũng Có Deadline',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'Writinman',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book12.png'),),
-                                ),
-                                title: 'Đắc Nhân Tâm',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'Dale Carnegie',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book13.png'),),
-                                ),
-                                title: 'Tâm Lý Học Giao Tiếp',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'Dash',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                            ],
+                          child: ListView.builder(
+                              itemCount: 3,
+                              itemBuilder: (context, index)  {
+                                for (var item in postData) {
+                                  if (item.category == "Fiction") {
+                                    return Column(
+                                      children: [
+                                        CustomListItemTwo(
+                                          thumbnail: Container(
+                                            child: Image.asset('${item.avatar}'),),
+                                          title: '${item.name}',
+                                          subtitle: '${item.review}',
+                                          author: '${item.author}',
+                                          publishDate: 'Dec 28',
+                                          readDuration: '5 mins',
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                }
+                                return CustomListItemTwo(
+                                  thumbnail: Container(
+                                    child: Image(image: AssetImage('images/book4.png'),),
+                                  ),
+                                  title: 'Great Expectations',
+                                  subtitle: 'Flutter continues to improve and expand its horizons. '
+                                      'This text should max out at two lines and clip',
+                                  author: 'Charies Dickens',
+                                  publishDate: 'Dec 28',
+                                  readDuration: '5 mins',
+                                );
+                              }
                           )
                       ),
                       Container(
-                          child:Column(
-                            children: [
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book2.png'),),
-                                ),
-                                title: 'Lord of the Rings',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'J.R.R Tolkein',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book4.png'),),
-                                ),
-                                title: 'Great Expectations',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'Charies Dickens',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book1.png'),),
-                                ),
-                                title: 'Catcher in the Rye',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'J.D. Salinger',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                            ],
-                          )
-                      ),
-                      Container(
-                          child:Column(
-                            children: [
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book9.png'),),
-                                ),
-                                title: 'Đọc Vị Bất Kỳ Ai',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'J.Lieberman',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book10.png'),),
-                                ),
-                                title: 'Tâm Lý Học Về Tiền',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'Dash',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                              CustomListItemTwo(
-                                thumbnail: Container(
-                                  child: Image(image: AssetImage('images/book11.png'),),
-                                ),
-                                title: 'Sapiens Lược Sử Loài Người',
-                                subtitle: 'Flutter continues to improve and expand its horizons. '
-                                    'This text should max out at two lines and clip',
-                                author: 'Dash',
-                                publishDate: 'Dec 28',
-                                readDuration: '5 mins',
-                              ),
-                            ],
+                          child: ListView.builder(
+                              itemCount: 3,
+                              itemBuilder: (context, index)  {
+                                for (var item in postData) {
+                                  if (item.category == "Action") {
+                                    return Column(
+                                      children: [
+                                        CustomListItemTwo(
+                                          thumbnail: Container(
+                                            child: Image.asset('${item.avatar}'),),
+                                          title: '${item.name}',
+                                          subtitle: '${item.review}',
+                                          author: '${item.author}',
+                                          publishDate: 'Dec 28',
+                                          readDuration: '5 mins',
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                }
+                                return CustomListItemTwo(
+                                  thumbnail: Container(
+                                    child: Image(image: AssetImage('images/book4.png'),),
+                                  ),
+                                  title: 'Great Expectations',
+                                  subtitle: 'Flutter continues to improve and expand its horizons. '
+                                      'This text should max out at two lines and clip',
+                                  author: 'Charies Dickens',
+                                  publishDate: 'Dec 28',
+                                  readDuration: '5 mins',
+                                );
+                              }
                           )
                       ),
                     ],
@@ -813,45 +926,57 @@ class _MyHomePageState extends State<HomePage>
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: const Image(image: AssetImage('images/book9.png'), width: 130,),
-                    ),
-                    SizedBox(height: 10,),
-                    Text("Đọc Vị Bất Kỳ Ai    ", style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),),
-                    SizedBox(height: 7,),
-                    Text("TS.David J.Lieberman", style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),)
-                  ],
+                child: FlatButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Introduce(title: "")));
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: const Image(image: AssetImage('images/book9.png'), width: 130,),
+                      ),
+                      SizedBox(height: 10,),
+                      Text("Đọc Vị Bất Kỳ Ai    ", style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      SizedBox(height: 7,),
+                      Text("TS.David J.Lieberman", style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),)
+                    ],
+                  ),
                 ),
+
               ),
               Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: const Image(image: AssetImage('images/book10.png'), width: 130,),
-                    ),
-                    SizedBox(height: 10,),
-                    Text("Tâm Lý Học Về Tền", style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),),
-                    SizedBox(height: 7,),
-                    Text("Morgan Housel", style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),)
-                  ],
+                child: FlatButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Introduce(title: "")));
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: const Image(image: AssetImage('images/book10.png'), width: 130,),
+                      ),
+                      SizedBox(height: 10,),
+                      Text("Tâm Lý Học Về Tền", style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      SizedBox(height: 7,),
+                      Text("Morgan Housel", style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),)
+                    ],
+                  ),
                 ),
               )
             ],
@@ -861,77 +986,90 @@ class _MyHomePageState extends State<HomePage>
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: const Image(image: AssetImage('images/book11.png'), width: 130,),
-                    ),
-                    SizedBox(height: 10,),
-                    Text("Sapiens Lược Sử  ", style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),),
-                    SizedBox(height: 7,),
-                    Text("Yuval Noah Harari", style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),)
-                  ],
+                child: FlatButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Introduce(title: "")));
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: const Image(image: AssetImage('images/book11.png'), width: 130,),
+                      ),
+                      SizedBox(height: 10,),
+                      Text("Sapiens Lược Sử  ", style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      SizedBox(height: 7,),
+                      Text("Yuval Noah Harari", style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),)
+                    ],
+                  ),
                 ),
+
+
               ),
               Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: const Image(image: AssetImage('images/book12.png'), width: 130,),
-                    ),
-                    SizedBox(height: 10,),
-                    Text("Đắc Nhân Tâm      ", style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),),
-                    SizedBox(height: 7,),
-                    Text("Dale Carnegie", style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),)
-                  ],
+                child: FlatButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Introduce(title: "")));
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: const Image(image: AssetImage('images/book12.png'), width: 130,),
+                      ),
+                      SizedBox(height: 10,),
+                      Text("Đắc Nhân Tâm      ", style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      SizedBox(height: 7,),
+                      Text("Dale Carnegie", style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),)
+                    ],
+                  ),
                 ),
+
+
               )
             ],
           ),
         ],
       ),
     );
-    //
-    // Widget content4 = Container(
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       Text("hhahahaha",
-    //         style: TextStyle(
-    //           fontWeight: FontWeight.bold,
-    //           fontSize: 28,
-    //         ),),
-    //       SizedBox(height: 15,),
-    //       FutureBuilder<List<Books>>(
-    //           future: books,
-    //           builder: (context, snapshot) {
-    //             if(snapshot.hasError){
-    //               return Text("${snapshot.error}");
-    //             } else if (snapshot.hasData){
-    //               return Text('${snapshot.data}');
-    //             }
-    //             return CircularProgressIndicator();
-    //           },
-    //       ),
-    //     ],
-    //   ),
-    // );
+
+    Widget content4 = SizedBox(
+      height: 200,
+      child: ListView.builder(
+        padding: EdgeInsets.all(10),
+          itemCount: postData.length,
+          itemBuilder: (context, index){
+            return Card(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${postData[index].name}'),
+                    SizedBox(height: 20,),
+                    Image.asset('${postData[index].avatar}'),
+                    Text('${postData[index].avatar}')
+                  ],
+                ),
+              ),
+
+            );
+          })
+    );
 
 
     return Scaffold(
@@ -954,7 +1092,6 @@ class _MyHomePageState extends State<HomePage>
                 content2,
                 content3,
                 SizedBox(height: 30,),
-                // content4,
 
               ],
             ),
@@ -970,11 +1107,11 @@ class _MyHomePageState extends State<HomePage>
         onTap: (index) => setState(() {
           currentIndex = index;
           if(index == 1) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => History(title: "")));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => History(data)));
           } else if (index == 2){
             Navigator.push(context, MaterialPageRoute(builder: (context) => ListBook(title: "")));
           } else if (index == 3){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(title: "")));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(data)));
           }
         }),
         items: [
@@ -998,7 +1135,7 @@ class _MyHomePageState extends State<HomePage>
 }
 
 class CustomSearch extends SearchDelegate {
-
+  List<Post> postData = [];
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -1022,11 +1159,15 @@ class CustomSearch extends SearchDelegate {
     );
   }
 
-
   @override
   Widget buildSuggestions(BuildContext context)  {
     List<String> matchQuery = [];
-
+    for (var item in postData) {
+      if (item.name!.toLowerCase().contains(query.toLowerCase())) {
+        print(item.name.toString());
+        matchQuery.add(item.name.toString());
+      }
+    }
 
     return ListView.builder(
         itemCount: matchQuery.length,
@@ -1038,25 +1179,23 @@ class CustomSearch extends SearchDelegate {
         });
   }
 
-
   @override
   Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    throw UnimplementedError();
+    List<String> matchQuery = [];
+    for (var item in postData) {
+      if (item.name!.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(item.name.toString());
+      }
+    }
+
+    return ListView.builder(
+        itemCount: matchQuery.length,
+        itemBuilder: (context, index) {
+          var result = matchQuery[index];
+          return ListTile(
+              title: Text(result)
+          );
+        });
   }
 }
 
-List<Books> parseBooks (String responseBody) {
-  final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
-  return parsed.map<Books>((json) => Books.fromJson(json)).toList();
-}
-
-Future<List<Books>> fetchBooks() async{
-  final url1 = Uri.parse('https://6382330e9842ca8d3ca3bce2.mockapi.io/api/books');
-  final response = await http.get(url1);
-  if(response.statusCode == 200){
-    return parseBooks(response.body);
-  } else {
-    throw Exception('Unable to fetch books from the rest API');
-  }
-}

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../readbook/readbook.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -98,8 +100,21 @@ class _MyHomePageState extends State<Introduce> {
           SizedBox(height: 50,),
 
           ElevatedButton(
-            onPressed: () {},
-            child: Text('Start Reading'),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ReadBook(title: "")));
+            },
+            child: SizedBox(
+              height: 50,
+              width: 260,
+              child: Center(
+                child: Text('Start Reading',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
             style: ElevatedButton.styleFrom(
               primary:Colors.red,
               onPrimary: Colors.white,

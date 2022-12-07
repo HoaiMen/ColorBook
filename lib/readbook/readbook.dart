@@ -13,21 +13,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: const MyHomePage(title: ''),
+      home: const ReadBook(title: ''),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class ReadBook extends StatefulWidget {
+  const ReadBook({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ReadBook> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<ReadBook> {
   int currentIndex = 0;
 
   @override
@@ -94,31 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Color(0xffc62828),
-        unselectedItemColor: Colors.black38,
-        currentIndex: currentIndex,
-        onTap: (index) => setState(() {
-          currentIndex = index;
-        }),
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.arrow_back_ios,),
-              label: 'back',
-              backgroundColor: Color(0xffe0e0e0)),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.history, ),
-              label: 'History'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.bookmark, ),
-              label: 'Bookmark',
-              backgroundColor: Colors.white60),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle, ),
-              label: 'User',
-              backgroundColor: Colors.white60),
-        ],
-      ),
+
     );
   }
 }
