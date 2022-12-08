@@ -299,7 +299,6 @@ class _MyHomePageState extends State<SignIn> {
                         for (var e in data) {
                           if(email == e["email"] && password == e["password"]){
                             check = true;
-                            print("aaaaaaa  đã tìm thấy email");
                           }
                         }
                         if(check){

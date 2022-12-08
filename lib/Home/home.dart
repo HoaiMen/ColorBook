@@ -176,7 +176,8 @@ class _MyHomePageState extends State<HomePage>
   dynamic data;
 
   _MyHomePageState(this.data);
-  List<Post> postData = [];
+  static List<Post> postData = [];
+  List<Post> display = List.from(postData);
 
   int currentIndex = 0;
   int activePage = 1;
@@ -195,7 +196,11 @@ class _MyHomePageState extends State<HomePage>
     _tabController = TabController(length: 3, vsync: this);
   }
 
-
+  void updateList(String value){
+    setState(() {
+      display = postData.where((item) => item.name!.toLowerCase().contains(value.toLowerCase())).toList();
+    });
+  }
   void showPopupMenu1() async {
     await showMenu(
       context: context,
@@ -288,15 +293,16 @@ class _MyHomePageState extends State<HomePage>
             ),),
           SizedBox(height: 15,),
           TextFormField(
+            onChanged: (value) => updateList(value),
             decoration: InputDecoration(
                 prefixIcon: IconButton(
                   icon: Icon(Icons.search),
                   color: Colors.black,
                   onPressed: ()  {
-                    showSearch(
-                        context: context,
-                        delegate: CustomSearch()
-                    );
+                    // showSearch(
+                    //     context: context,
+                    //     delegate: CustomSearch()
+                    // );
                   },
                   splashRadius: 17,
                   splashColor: Colors.lightBlueAccent,
@@ -716,16 +722,16 @@ class _MyHomePageState extends State<HomePage>
                           child: ListView.builder(
                               itemCount: 3,
                               itemBuilder: (context, index)  {
-                                for (var item in postData) {
-                                  if (item.category == "Fantasy") {
+                                for (var item in display) {
+                                  if (display[index].category == "Fantasy") {
                                     return Column(
                                       children: [
                                         CustomListItemTwo(
                                           thumbnail: Container(
-                                            child: Image.asset('${item.avatar}'),),
-                                          title: '${item.name}',
-                                          subtitle: '${item.review}',
-                                          author: '${item.author}',
+                                            child: Image.asset('${display[index].avatar}'),),
+                                          title: '${display[index].name}',
+                                          subtitle: '${display[index].review}',
+                                          author: '${display[index].author}',
                                           publishDate: 'Dec 28',
                                           readDuration: '5 mins',
                                         ),
@@ -733,6 +739,7 @@ class _MyHomePageState extends State<HomePage>
                                     );
                                   }
                                 }
+
                                 return CustomListItemTwo(
                                           thumbnail: Container(
                                             child: Image(image: AssetImage('images/book4.png'),),

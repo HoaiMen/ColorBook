@@ -332,7 +332,6 @@ class _MyHomePageState extends State<Register> {
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        print("aaaaaaaaa");
                         var fullname = fullnameController.text.trim();
                         var email = emailController.text.trim();
                         var password = passwordController.text.trim();
